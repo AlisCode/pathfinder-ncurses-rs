@@ -1,18 +1,20 @@
 extern crate pancurses;
 
-use pancurses::*;
-
 pub mod blocks;
+pub mod application;
+
+use pancurses::*;
+use application::application::Application;
 
 fn main() {
-    
-    let stdscr: Window = initscr();
-    noecho();
-    cbreak();
-    curs_set(0);
-    
-    let max_x: i32 = stdscr.get_max_x();
-    let max_y: i32 = stdscr.get_max_y();
 
+    // Creates the main window and initiating ncurses
+    let stdscr: Window = initscr();
+
+    // Launches the application
+    let mut app: Application = Application::new(stdscr);
+    app.launch();
+
+    // Cleanup
     endwin();
 }

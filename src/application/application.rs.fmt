@@ -1,0 +1,59 @@
+use pancurses::*;
+use blocks::map::Map;
+
+pub struct Application {
+    running: bool,
+    stdscr: Window,
+    map_window: Arc<Window>,
+    map: Arc<Map>,
+}
+
+impl Application {
+    pub fn new(stdscr: Window) -> Self {
+        Application {
+            running: false,
+            stdscr: stdscr,
+            map_window: std::ptr::null(),
+            map: std::ptr::null(),
+        }
+    }
+
+    fn setup(&mut self) {
+
+        self.stdscr.nodelay(false);
+        noecho();
+        cbreak();
+        curs_set(0);
+        self.stdscr.refresh();
+
+        let max_x: i32 = self.stdscr.get_max_x();
+        let max_y: i32 = self.stdscr.get_max_y();
+
+        let map_window = newwin(max_y, max_x, 0, 0)
+        self.map_window = Some();
+        self.map = Some(Map::new());
+        self.map.unwrap().create_empty(10, 10);
+
+
+    }
+
+    pub fn launch(&mut self) {
+
+        self.setup();
+
+        self.running = true;
+
+        while self.running {
+            self.update();
+        }
+
+    }
+
+    // Update the application
+    fn update(&mut self) {
+
+        self.map.unwrap().draw(&self.map_window.unwrap());
+        self.stdscr.refresh();
+        self.stdscr.getch();
+    }
+}
