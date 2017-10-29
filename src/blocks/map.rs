@@ -7,20 +7,18 @@ pub struct Map {
 }
 
 impl Map {
-
     pub fn new() -> Self {
         Map {
             list_items: Vec::new(),
         }
     }
 
-    pub fn draw(&mut self, window: &Window) {
-        
+    pub fn draw(&self, window: &Window) {
         window.clear();
-        window.draw_box('|','-');
-        
+        window.draw_box('|', '-');
+
         self.list_items.iter().for_each(|case| {
-            case.draw(window);
+            case.draw(&window);
         });
 
         window.refresh();
@@ -29,7 +27,7 @@ impl Map {
     pub fn create_empty(&mut self, size_x: i32, size_y: i32) {
         for x in 1..size_x {
             for y in 1..size_y {
-                self.list_items.push(Case::new(x,y, TypeCase::Void));
+                self.list_items.push(Case::new(x, y, TypeCase::Void));
             }
         }
     }

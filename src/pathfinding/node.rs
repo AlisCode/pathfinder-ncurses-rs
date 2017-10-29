@@ -35,11 +35,11 @@ impl Node {
     pub fn draw(&self, win: &Window) {}
 
     pub fn get_x(&self) {
-        self.x
+        &self.x
     }
 
     pub fn get_y(&self) {
-        self.y
+        &self.y
     }
 
     pub fn set_parent()
