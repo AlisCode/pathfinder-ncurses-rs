@@ -31,4 +31,6 @@ impl Map {
             }
         }
     }
+
+    pub fn load(&mut self) {}
 }

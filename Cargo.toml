@@ -5,3 +5,5 @@ authors = ["olivier"]
 
 [dependencies]
 pancurses = "*"
+byteorder = "*"
+nom = "*"

@@ -5,22 +5,15 @@ pub enum TypeCase {
     Wall,
     StartPoint,
     EndPoint,
-    PathRight,
-    PathLeft,
-    PathUp,
-    PathDown,
 }
 
 pub struct Case {
-
     x: i32,
     y: i32,
     flag: TypeCase,
-
 }
 
 impl Case {
-
     pub fn new(x: i32, y: i32, flag: TypeCase) -> Self {
         Case {
             x: x,
@@ -34,7 +27,7 @@ impl Case {
     }
 
     pub fn set_x(&mut self, new_x: i32) {
-        self.x = new_x; 
+        self.x = new_x;
     }
 
     pub fn get_y(&self) -> &i32 {
@@ -59,11 +52,10 @@ impl Case {
             TypeCase::Wall => "X",
             TypeCase::StartPoint => "S",
             TypeCase::EndPoint => "E",
-            _ => "?",
         }
     }
 
     pub fn draw(&self, win: &Window) {
-        win.mvprintw(self.x, self.y, self.get_char_representation()); 
+        win.mvprintw(self.x, self.y, self.get_char_representation());
     }
 }

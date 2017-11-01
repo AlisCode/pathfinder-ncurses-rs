@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate nom;
 extern crate pancurses;
 
 pub mod blocks;
@@ -6,8 +8,12 @@ pub mod application;
 use pancurses::*;
 use application::application::Application;
 
-fn main() {
+use blocks::mapparser::load_map;
 
+fn main() {
+    load_map();
+
+    /*
     // Creates the main window and initiating ncurses
     let stdscr: Window = initscr();
 
@@ -17,4 +23,5 @@ fn main() {
 
     // Cleanup
     endwin();
+    */
 }
