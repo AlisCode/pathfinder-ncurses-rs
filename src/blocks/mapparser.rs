@@ -1,4 +1,4 @@
-use nom::{IResult, digit, eol};
+use nom::{IResult, digit, rest};
 use std::str::{FromStr,from_utf8};
 
 #[derive(Debug)]
@@ -22,21 +22,15 @@ named!(i32_digit<i32>,
     )
 );
 
-named!(all_bytes_to_end< &[u8] >, 
-    take_until!(
-        eol
-    )
-);
-
 named!(get_map_width<&[u8], i32>, preceded!(tag!("w:"), i32_digit));
 named!(get_map_height<&[u8], i32>, preceded!(tag!("h:"), i32_digit));
-named!(get_map_flags<&[u8], &[u8] >, preceded!(tag!("d:"), all_bytes_to_end));
 
 named!(parse_map_infos<&[u8], MapInfos>, 
 do_parse!(
     width: get_map_width >>
     height: get_map_height >>
-    flags: get_map_flags >>
+    tag!("d:") >>
+    flags: rest >>
     (MapInfos { width: width, height: height, flags: flags.into()})
 ));
 
