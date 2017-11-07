@@ -11,7 +11,8 @@ use application::application::Application;
 use blocks::mapparser::load_map;
 
 fn main() {
-    load_map();
+    let test = load_map("test.map".into());
+    println!("{:?}", test);
 
     /*
     // Creates the main window and initiating ncurses
