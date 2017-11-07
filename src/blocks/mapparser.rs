@@ -4,6 +4,8 @@ use std::str::{FromStr,from_utf8};
 use std::fs::File;
 use std::io::prelude::*;
 
+
+/// Stores the basic informations about a map
 #[derive(Debug)]
 pub struct MapInfos {
     width: i32,
@@ -11,8 +13,11 @@ pub struct MapInfos {
     flags: Vec<u8>,
 }
 
+/// MapInfos functions
 impl MapInfos {
 
+    /// Constructor of MapInfos
+    /// width: i32
     pub fn new(width: i32, height: i32, flags: Vec<u8>) -> Self {
 
         let flags = flags.into_iter().filter(|x| *x != b'\n').collect();
@@ -25,6 +30,8 @@ impl MapInfos {
     }
 }
 
+
+/// Generic parser for numeric values
 named!(numeric_string<&str>,
     map_res!(
         digit,
@@ -32,6 +39,7 @@ named!(numeric_string<&str>,
     )
 );
 
+/// Generic parser for an i32 value
 named!(i32_digit<i32>,
     map_res!(
         numeric_string,
@@ -39,20 +47,26 @@ named!(i32_digit<i32>,
     )
 );
 
+/// Parser to get the map's width
 named!(get_map_width<&[u8], i32>, preceded!(tag!("w:"), i32_digit));
+
+// Parser to get the map's height
 named!(get_map_height<&[u8], i32>, preceded!(tag!("h:"), i32_digit));
 
+// Parser for the whole map format
 named!(parse_map_infos<&[u8], MapInfos>, 
 do_parse!(
-    width: get_map_width >>
-    opt!(tag!("\n")) >>
-    height: get_map_height >>
-    opt!(tag!("\n")) >>
-    tag!("d:") >>
-    flags: rest >>
-    (MapInfos::new(width, height, flags.into()))
+    width: get_map_width >>     // Gets the map width
+    opt!(tag!("\n")) >>         // Allows to jump lines between infos
+    height: get_map_height >>   // Gets the map height
+    opt!(tag!("\n")) >>         // Allows to jump lines between infos
+    tag!("d:") >>               // Detects the start of the data bytes
+    flags: rest >>              // All the bytes until the end are the map's data
+    (MapInfos::new(width, height, flags.into())) // Returns the MapInfos struct
 ));
 
+/// Loads the map using the given filename.
+/// Returns a MapInfos struct if the map could be loaded, or an error with a &'static str explaining why the map could not be loaded
 pub fn load_map(filename: String) -> Result<MapInfos, &'static str> {
 
     // Opens the file
@@ -61,7 +75,7 @@ pub fn load_map(filename: String) -> Result<MapInfos, &'static str> {
         _ => return Err("File not found"),
     };
 
-    // Reads the file
+    // Reads the file and tries to parse it using nom and the parses defined previously
     let mut buf = vec!();
     let res = match file.read_to_end(&mut buf) {
         Ok(_) => parse_map_infos(&buf),
