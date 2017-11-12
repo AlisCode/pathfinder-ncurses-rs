@@ -32,5 +32,7 @@ impl Map {
         }
     }
 
-    pub fn load(&mut self) {}
+    pub fn add_case(&mut self, c: Case) {
+        self.list_items.push(c);
+    }
 }

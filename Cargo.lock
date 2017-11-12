@@ -1,12 +1,3 @@
-[root]
-name = "pathfinder-ncurses-rs"
-version = "0.1.0"
-dependencies = [
- "byteorder 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "nom 3.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "pancurses 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
 [[package]]
 name = "byteorder"
 version = "1.1.0"
@@ -62,6 +53,15 @@ dependencies = [
  "log 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ncurses 5.86.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pdcurses-sys 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "pathfinder-ncurses-rs"
+version = "0.1.0"
+dependencies = [
+ "byteorder 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nom 3.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pancurses 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

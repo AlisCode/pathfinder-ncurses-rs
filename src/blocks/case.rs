@@ -7,6 +7,17 @@ pub enum TypeCase {
     EndPoint,
 }
 
+
+
+pub fn u8_to_typecase(u: u8) -> TypeCase {
+    match u {
+        48 => TypeCase::Void,
+        49 => TypeCase::Wall,
+        50 => TypeCase::EndPoint,
+        51 => TypeCase::StartPoint,
+    }
+}
+
 pub struct Case {
     x: i32,
     y: i32,

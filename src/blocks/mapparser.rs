@@ -4,6 +4,8 @@ use std::str::{FromStr,from_utf8};
 use std::fs::File;
 use std::io::prelude::*;
 
+use blocks::map::{Map};
+use blocks::case::{Case, u8_to_typecase};
 
 /// Stores the basic informations about a map
 #[derive(Debug)]
@@ -27,6 +29,31 @@ impl MapInfos {
             height: height,
             flags: flags,        
         }
+    }
+
+    pub fn create_map(&self) -> Map {
+        // TODO finish the map loading. Operation on u8 not allowed ?
+        let mut m: Map = Map::new();
+        
+        self.flags
+        .into_iter()
+        .enumerate()
+        .map(|(i, val)| {
+            let x: i32 = i.into() % self.width + 1;
+            let y: i32 = i.into() / self.width + 1;
+            let case: Case = Case::new(x, y, u8_to_typecase(val));
+            m.add_case(case);
+        });
+        
+        let i: i32 = 0;
+        for x in 1..self.width {
+            for y in 1..self.height {
+                
+                i = i+1;
+            }
+        }
+
+        m
     }
 }
 

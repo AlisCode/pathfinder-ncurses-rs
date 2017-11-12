@@ -1,6 +1,8 @@
 use pancurses::*;
 use blocks::map::Map;
 
+use blocks::mapparser::load_map;
+
 pub struct Application {
     running: bool,
     stdscr: Window,
@@ -19,8 +21,10 @@ impl Application {
 
         // Creates the map itself
         let mut map: Map = Map::new();
-        map.create_empty(10, 10);
+        //map.create_empty(10, 10);
+        map = load_map("test.map".into()).unwrap().create_map();
 
+        // Returns the application struct
         Application {
             running: false,
             stdscr: stdscr,
@@ -29,6 +33,7 @@ impl Application {
         }
     }
 
+    /// Setups the application
     fn setup(&mut self) {
         self.stdscr.nodelay(false);
         noecho();
@@ -37,6 +42,7 @@ impl Application {
         self.stdscr.refresh();
     }
 
+    /// Launches the application
     pub fn launch(&mut self) {
         self.setup();
 
