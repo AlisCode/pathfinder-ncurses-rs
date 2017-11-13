@@ -15,6 +15,7 @@ pub fn u8_to_typecase(u: u8) -> TypeCase {
         49 => TypeCase::Wall,
         50 => TypeCase::EndPoint,
         51 => TypeCase::StartPoint,
+        _ => unreachable!(),
     }
 }
 

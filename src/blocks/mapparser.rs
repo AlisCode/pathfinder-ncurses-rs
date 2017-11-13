@@ -1,10 +1,10 @@
 use nom::{IResult, digit, rest};
-use std::str::{FromStr,from_utf8};
+use std::str::{FromStr, from_utf8};
 
 use std::fs::File;
 use std::io::prelude::*;
 
-use blocks::map::{Map};
+use blocks::map::Map;
 use blocks::case::{Case, u8_to_typecase};
 
 /// Stores the basic informations about a map
@@ -17,40 +17,30 @@ pub struct MapInfos {
 
 /// MapInfos functions
 impl MapInfos {
-
     /// Constructor of MapInfos
     /// width: i32
     pub fn new(width: i32, height: i32, flags: Vec<u8>) -> Self {
-
         let flags = flags.into_iter().filter(|x| *x != b'\n').collect();
 
-        MapInfos { 
-            width: width,
-            height: height,
-            flags: flags,        
+        MapInfos {
+            width,
+            height,
+            flags,
         }
     }
 
-    pub fn create_map(&self) -> Map {
+    pub fn create_map(self) -> Map {
         // TODO finish the map loading. Operation on u8 not allowed ?
         let mut m: Map = Map::new();
-        
-        self.flags
-        .into_iter()
-        .enumerate()
-        .map(|(i, val)| {
-            let x: i32 = i.into() % self.width + 1;
-            let y: i32 = i.into() / self.width + 1;
+
+        for (i, val) in self.flags
+                                        .into_iter()
+                                        .enumerate()
+        {
+            let x = i as i32 % self.width + 1;
+            let y = i as i32 / self.width + 1;
             let case: Case = Case::new(x, y, u8_to_typecase(val));
             m.add_case(case);
-        });
-        
-        let i: i32 = 0;
-        for x in 1..self.width {
-            for y in 1..self.height {
-                
-                i = i+1;
-            }
         }
 
         m
@@ -84,8 +74,10 @@ named!(get_map_height<&[u8], i32>, preceded!(tag!("h:"), i32_digit));
 named!(parse_map_infos<&[u8], MapInfos>, 
 do_parse!(
     width: get_map_width >>     // Gets the map width
+    opt!(tag!("\r")) >>         // Allows to jump lines between infos (windows)
     opt!(tag!("\n")) >>         // Allows to jump lines between infos
     height: get_map_height >>   // Gets the map height
+    opt!(tag!("\r")) >>         // Allows to jump lines between infos (windows)
     opt!(tag!("\n")) >>         // Allows to jump lines between infos
     tag!("d:") >>               // Detects the start of the data bytes
     flags: rest >>              // All the bytes until the end are the map's data
@@ -95,7 +87,6 @@ do_parse!(
 /// Loads the map using the given filename.
 /// Returns a MapInfos struct if the map could be loaded, or an error with a &'static str explaining why the map could not be loaded
 pub fn load_map(filename: String) -> Result<MapInfos, &'static str> {
-
     // Opens the file
     let mut file = match File::open(filename) {
         Ok(file) => file,
@@ -106,16 +97,15 @@ pub fn load_map(filename: String) -> Result<MapInfos, &'static str> {
     let mut buf = vec!();
     let res = match file.read_to_end(&mut buf) {
         Ok(_) => parse_map_infos(&buf),
-        Err(_) => return Err("Could not read file"), 
+        Err(_) => return Err("Could not read file"),
     };
 
     // Matches the result to return what we want
     match res {
-        IResult::Done(_,map_infos) => {
+        IResult::Done(_, map_infos) => {
             Ok(map_infos)
-        },
+        }
         IResult::Error(_) => Err("Invalid map format"),
-        _ => Err("Incomplete file"), 
+        _ => Err("Incomplete file"),
     }
-    
 }
