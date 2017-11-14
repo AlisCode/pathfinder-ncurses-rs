@@ -20,7 +20,7 @@ impl MapInfos {
     /// Constructor of MapInfos
     /// width: i32
     pub fn new(width: i32, height: i32, flags: Vec<u8>) -> Self {
-        let flags = flags.into_iter().filter(|x| *x != b'\n').collect();
+        let flags = flags.into_iter().filter(|x| *x != b'\n' && *x != b'\r').collect();
 
         MapInfos {
             width,
