@@ -8,18 +8,16 @@ pub struct Map {
 
 impl Map {
     pub fn new() -> Self {
-        Map {
-            list_items: Vec::new(),
-        }
+        Map { list_items: Vec::new() }
     }
 
     pub fn draw(&self, window: &Window) {
         window.clear();
         window.draw_box('|', '-');
 
-        self.list_items.iter().for_each(|case| {
-            case.draw(&window);
-        });
+        self.list_items.iter().for_each(
+            |case| { case.draw(&window); },
+        );
 
         window.refresh();
     }

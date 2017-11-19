@@ -21,8 +21,7 @@ impl Application {
 
         // Creates the map itself
         let mut map: Map = Map::new();
-        //map.create_empty(10, 10);
-        map = load_map("test.map".into()).unwrap().create_map();
+        map.create_empty(10, 10);
 
         // Returns the application struct
         Application {

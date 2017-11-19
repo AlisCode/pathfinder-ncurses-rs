@@ -3,6 +3,7 @@ extern crate nom;
 extern crate pancurses;
 
 pub mod blocks;
+pub mod menu;
 pub mod application;
 
 use pancurses::*;
@@ -19,5 +20,5 @@ fn main() {
 
     // Cleanup
     endwin();
-    
+
 }

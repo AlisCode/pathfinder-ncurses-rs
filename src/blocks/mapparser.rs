@@ -20,7 +20,10 @@ impl MapInfos {
     /// Constructor of MapInfos
     /// width: i32
     pub fn new(width: i32, height: i32, flags: Vec<u8>) -> Self {
-        let flags = flags.into_iter().filter(|x| *x != b'\n' && *x != b'\r').collect();
+        let flags = flags
+            .into_iter()
+            .filter(|x| *x != b'\n' && *x != b'\r')
+            .collect();
 
         MapInfos {
             width,
@@ -30,13 +33,10 @@ impl MapInfos {
     }
 
     pub fn create_map(self) -> Map {
-        // TODO finish the map loading. Operation on u8 not allowed ?
+
         let mut m: Map = Map::new();
 
-        for (i, val) in self.flags
-                                        .into_iter()
-                                        .enumerate()
-        {
+        for (i, val) in self.flags.into_iter().enumerate() {
             let x = i as i32 % self.width + 1;
             let y = i as i32 / self.width + 1;
             let case: Case = Case::new(x, y, u8_to_typecase(val));
@@ -94,7 +94,7 @@ pub fn load_map(filename: String) -> Result<MapInfos, &'static str> {
     };
 
     // Reads the file and tries to parse it using nom and the parses defined previously
-    let mut buf = vec!();
+    let mut buf = vec![];
     let res = match file.read_to_end(&mut buf) {
         Ok(_) => parse_map_infos(&buf),
         Err(_) => return Err("Could not read file"),
@@ -102,9 +102,7 @@ pub fn load_map(filename: String) -> Result<MapInfos, &'static str> {
 
     // Matches the result to return what we want
     match res {
-        IResult::Done(_, map_infos) => {
-            Ok(map_infos)
-        }
+        IResult::Done(_, map_infos) => Ok(map_infos),
         IResult::Error(_) => Err("Invalid map format"),
         _ => Err("Incomplete file"),
     }
