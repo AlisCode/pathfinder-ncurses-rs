@@ -1,11 +1,16 @@
 use pancurses::*;
 use blocks::map::Map;
 
-use blocks::mapparser::load_map;
+use std::rc::Rc;
+
+use menu::mainmenu::MainMenu;
+use menu::menuhandler::MenuHandler;
 
 pub struct Application {
     running: bool,
     stdscr: Window,
+    menu_handler: MenuHandler,
+    main_menu: MainMenu,
     map_window: Window,
     map: Map,
 }
@@ -28,6 +33,8 @@ impl Application {
             running: false,
             stdscr: stdscr,
             map_window: map_window,
+            menu_handler: MenuHandler::new(),
+            main_menu: MainMenu::new(max_x, max_y),
             map: map,
         }
     }
@@ -76,8 +83,8 @@ impl Application {
     // Handle the given input if it is a char
     fn handle_input_char(&mut self, c: char) {
         match c {
-            'm' => return,      // M key
-            'q' => self.quit(), // Q key
+            'm' => self.menu_handler.give_focus(&self.main_menu), // M key, activates the main menu
+            'q' => self.quit(),                                   // Q key, quits the application
             _ => return,
         }
     }
@@ -85,7 +92,7 @@ impl Application {
     // Handle the given input if it is unknown
     fn handle_input_unknown(&mut self, i: i32) {
         match i {
-            27 => self.quit(), // ESC Key
+            27 => self.quit(), // ESC Key, quits the application
             _ => return,
         }
     }
