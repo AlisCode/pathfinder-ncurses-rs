@@ -1,5 +1,6 @@
 use menu::menu::Menu;
 
+use pancurses::Window;
 use menu::mainmenu::MainMenu;
 
 pub enum Menus {
@@ -22,12 +23,11 @@ pub struct MenuHandler {
 }
 
 impl MenuHandler {
-    pub fn new(max_x: i32, max_y:i32) -> Self {
-
+    pub fn new(max_x: i32, max_y: i32) -> Self {
         let main_menu: MainMenu = MainMenu::new(max_x, max_y);
 
         MenuHandler {
-            menus: vec!(Box::new(main_menu)),            
+            menus: vec![Box::new(main_menu)],
             focused_menu: Option::None,
         }
     }
@@ -38,9 +38,23 @@ impl MenuHandler {
 
     fn get_current_menu(&mut self) -> Option<&mut Menu> {
         if let Some(index) = self.focused_menu {
-            Some(&mut(*self.menus[index]))
+            Some(&mut (*self.menus[index]))
         } else {
             None
+        }
+    }
+
+    fn current_menu_requires_focus(&mut self) -> bool {
+        match self.get_current_menu() {
+            Some(menu) => menu.requires_focus(),
+            None => false,
+        }
+    }
+
+    pub fn has_focus(&self) -> bool {
+        match self.focused_menu {
+            Some(_) => true,
+            _ => false,
         }
     }
 
@@ -52,10 +66,14 @@ impl MenuHandler {
 
     pub fn update(&mut self) {
         match self.get_current_menu() {
-            Some(menu) => {
-                menu.update();
-            }
+            Some(menu) => if menu.requires_focus() {
+                menu.give_focus();
+            },
             None => return,
+        }
+
+        if !self.current_menu_requires_focus() {
+            self.lose_focus();
         }
     }
 }

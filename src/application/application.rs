@@ -59,11 +59,14 @@ impl Application {
     fn update(&mut self) {
         self.map.draw(&self.map_window);
 
-        self.stdscr.refresh();
-
-        match self.stdscr.getch() {
-            Some(input) => self.handle_input(input),
-            None => return,
+        if self.menu_handler.has_focus() {
+            self.menu_handler.update();
+        } else {
+            self.stdscr.refresh();
+            match self.stdscr.getch() {
+                Some(input) => self.handle_input(input),
+                None => return,
+            }
         }
     }
 
@@ -80,7 +83,7 @@ impl Application {
     fn handle_input_char(&mut self, c: char) {
         match c {
             'm' => self.menu_handler.give_focus(Menus::Main), // M key, activates the main menu
-            'q' => self.quit(),                                   // Q key, quits the application
+            'q' => self.quit(),                               // Q key, quits the application
             _ => return,
         }
     }

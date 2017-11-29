@@ -1,14 +1,16 @@
 use pancurses::{Input, Window, A_REVERSE};
 
 pub struct MenuOption {
-    name: &'static str,
-    callback: &'static Fn() -> (),
+    pub name: &'static str,
+    pub callback: &'static Fn() -> (),
 }
 
 pub trait Menu {
     fn draw(&self) {
         let selected = self.get_focused_option_index();
         let window = self.get_window();
+
+        window.attroff(A_REVERSE);
         window.draw_box('|', '-');
 
         for (i, val) in self.get_list_options().iter().enumerate() {
@@ -19,6 +21,8 @@ pub trait Menu {
             }
 
             if self.is_vertical() {
+                window.mvaddstr(1, 0, val.name);
+            } else {
                 window.mvaddstr(0, 1, val.name);
             }
         }
@@ -34,6 +38,7 @@ pub trait Menu {
     }
 
     fn give_focus(&mut self) {
+        self.set_requires_focus(true);
         self.draw();
         self.update();
     }
@@ -76,11 +81,14 @@ pub trait Menu {
         self.set_focused_option_index(option);
     }
 
-    fn validate(&self) {
+    fn validate(&mut self) {
         (self.get_list_options()[self.get_focused_option_index() as usize].callback)();
+        self.set_requires_focus(false);
     }
 
 
+    fn set_requires_focus(&mut self, focus: bool);
+    fn requires_focus(&self) -> bool;
     fn is_vertical(&self) -> bool;
 
     fn get_option_count(&self) -> i32 {

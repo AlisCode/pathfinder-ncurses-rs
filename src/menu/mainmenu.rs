@@ -5,14 +5,27 @@ pub struct MainMenu {
     options: Vec<MenuOption>,
     window: Window,
     selected_index: i32,
+    validated: bool,
+}
+
+fn test_callback() {
+    eprintln!("Test!");
 }
 
 impl MainMenu {
+    pub fn option_edit(&self) {}
+
     pub fn new(max_x: i32, max_y: i32) -> Self {
+        let option_edit = MenuOption {
+            name: "edit",
+            callback: &test_callback,
+        };
+
         MainMenu {
-            options: Vec::new(),
+            options: vec![option_edit],
             window: newwin(3, max_x, max_y - 3, 0),
             selected_index: 0,
+            validated: true,
         }
     }
 }
@@ -20,6 +33,14 @@ impl MainMenu {
 impl Menu for MainMenu {
     fn is_vertical(&self) -> bool {
         false
+    }
+
+    fn requires_focus(&self) -> bool {
+        self.validated
+    }
+
+    fn set_requires_focus(&mut self, focus: bool) {
+        self.validated = focus;
     }
 
     fn get_focused_option_index(&self) -> i32 {
