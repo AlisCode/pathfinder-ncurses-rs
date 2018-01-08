@@ -1,11 +1,21 @@
-use menu::menu::Menu;
+use pancurses::newwin;
 
-use pancurses::Window;
-use menu::mainmenu::MainMenu;
+use application::application::Application;
+use menu::menu::{Menu, MenuOption, MenuBuilder};
 
+use menu::mainmenu::MainMenuMessage;
+use menu::selecttypemenu::SelectTypeMenuMessage;
+
+#[derive(Copy, Clone)]
 pub enum Menus {
     Main,
     SelectType,
+}
+
+#[derive(Copy, Clone)]
+pub enum MenusMessage {
+    Main(MainMenuMessage),
+    SelectType(SelectTypeMenuMessage),
 }
 
 impl Into<usize> for Menus {
@@ -18,16 +28,24 @@ impl Into<usize> for Menus {
 }
 
 pub struct MenuHandler {
-    menus: Vec<Box<Menu>>,
+    menus: Vec<Menu>,
     focused_menu: Option<usize>,
 }
 
 impl MenuHandler {
     pub fn new(max_x: i32, max_y: i32) -> Self {
-        let main_menu: MainMenu = MainMenu::new(max_x, max_y);
+        let main_menu =
+            MenuBuilder::new()
+                .set_vertical(false)
+                .set_window(newwin(3, max_x, max_y - 3, 0))
+                .with_option(MenuOption::new("edit", MenusMessage::Main(MainMenuMessage::Edit)))
+                .with_option(MenuOption::new("load", MenusMessage::Main(MainMenuMessage::Load)))
+                .with_option(MenuOption::new("save", MenusMessage::Main(MainMenuMessage::Save)))
+                .with_option(MenuOption::new("quit", MenusMessage::Main(MainMenuMessage::Quit)))
+                .build();
 
         MenuHandler {
-            menus: vec![Box::new(main_menu)],
+            menus: vec![main_menu],
             focused_menu: Option::None,
         }
     }
@@ -38,23 +56,9 @@ impl MenuHandler {
 
     fn get_current_menu(&mut self) -> Option<&mut Menu> {
         if let Some(index) = self.focused_menu {
-            Some(&mut (*self.menus[index]))
+            Some(&mut self.menus[index])
         } else {
             None
-        }
-    }
-
-    fn current_menu_requires_focus(&mut self) -> bool {
-        match self.get_current_menu() {
-            Some(menu) => menu.requires_focus(),
-            None => false,
-        }
-    }
-
-    pub fn has_focus(&self) -> bool {
-        match self.focused_menu {
-            Some(_) => true,
-            _ => false,
         }
     }
 
@@ -62,18 +66,38 @@ impl MenuHandler {
         let index = new_menu.into();
         assert!(index < self.menus.len());
         self.focused_menu = Some(index);
+        if let Some(menu) = self.get_current_menu() { menu.give_focus(); }
     }
 
-    pub fn update(&mut self) {
-        match self.get_current_menu() {
-            Some(menu) => if menu.requires_focus() {
-                menu.give_focus();
-            },
-            None => return,
+    pub fn has_focus(&self) -> bool {
+        if let Some(_) = self.focused_menu {
+            return true;
         }
 
-        if !self.current_menu_requires_focus() {
+        false
+    }
+
+    pub fn update(&mut self) -> Option<MenusMessage> {
+        let mut loses_focus: bool = false;
+        let mut opt_message: Option<MenusMessage> = None;
+
+
+        match self.get_current_menu() {
+            Some(menu) => {
+                if menu.requires_focus() {
+                    opt_message = menu.tick();
+                } else {
+                    loses_focus = true;
+                }
+            }
+            None => (),
+        }
+
+
+        if loses_focus {
             self.lose_focus();
         }
+
+        opt_message
     }
 }

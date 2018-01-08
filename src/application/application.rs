@@ -1,8 +1,9 @@
 use pancurses::*;
 use blocks::map::Map;
 
-use menu::mainmenu::MainMenu;
-use menu::menuhandler::{MenuHandler, Menus};
+use menu::menuhandler::{MenuHandler, Menus, MenusMessage};
+use menu::mainmenu::MainMenuMessage;
+use menu::selecttypemenu::SelectTypeMenuMessage;
 
 pub struct Application {
     running: bool,
@@ -59,8 +60,10 @@ impl Application {
     fn update(&mut self) {
         self.map.draw(&self.map_window);
 
-        if self.menu_handler.has_focus() {
-            self.menu_handler.update();
+        let has_focus: bool = self.menu_handler.has_focus();
+        if has_focus {
+            let message = self.menu_handler.update();
+            self.handle_message(message);
         } else {
             self.stdscr.refresh();
             match self.stdscr.getch() {
@@ -93,6 +96,31 @@ impl Application {
         match i {
             27 => self.quit(), // ESC Key, quits the application
             _ => return,
+        }
+    }
+
+    /// Handles the given message
+    fn handle_message(&mut self, message: Option<MenusMessage>) {
+        match message {
+            Some(MenusMessage::Main(msg)) => self.handle_menu_main_message(msg),
+            Some(MenusMessage::SelectType(msg)) => self.handle_menu_select_type_message(msg),
+            None => (),
+        }
+    }
+
+    /// Handles the given message if it came from the main menu
+    fn handle_menu_main_message(&mut self, message: MainMenuMessage) {
+        match message {
+            MainMenuMessage::Edit => (),
+            MainMenuMessage::Load => (),
+            MainMenuMessage::Save => (),
+            MainMenuMessage::Quit => self.quit(),
+        }
+    }
+
+    fn handle_menu_select_type_message(&mut self, message: SelectTypeMenuMessage) {
+        match message {
+            SelectTypeMenuMessage::Edit => (),
         }
     }
 

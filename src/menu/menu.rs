@@ -1,109 +1,173 @@
 use pancurses::{Input, Window, A_REVERSE};
+use menu::menuhandler::MenusMessage;
+
+use application::application::Application;
 
 pub struct MenuOption {
-    pub name: &'static str,
-    pub callback: &'static Fn() -> (),
+    pub name: String,
+    pub message: MenusMessage,
 }
 
-pub trait Menu {
+impl MenuOption {
+    pub fn new(option_name: &str, mess: MenusMessage) -> Self {
+        MenuOption {
+            name: option_name.into(),
+            message: mess,
+        }
+    }
+}
+
+pub struct Menu {
+    options: Vec<MenuOption>,
+    selected_index: usize,
+    window: Window,
+    vertical: bool,
+    requires_focus: bool,
+}
+
+impl Menu {
     fn draw(&self) {
-        let selected = self.get_focused_option_index();
-        let window = self.get_window();
+        self.window.attroff(A_REVERSE);
+        self.window.draw_box('|', '-');
 
-        window.attroff(A_REVERSE);
-        window.draw_box('|', '-');
+        self.window.mv(1, 1);
 
-        for (i, val) in self.get_list_options().iter().enumerate() {
-            if i as i32 == selected {
-                window.attron(A_REVERSE);
+        self.options.iter().enumerate().for_each(|(index, curr_option)| {
+            if index == self.selected_index {
+                self.window.attron(A_REVERSE);
             } else {
-                window.attroff(A_REVERSE);
+                self.window.attroff(A_REVERSE);
             }
 
-            if self.is_vertical() {
-                window.mvaddstr(1, 0, val.name);
-            } else {
-                window.mvaddstr(0, 1, val.name);
-            }
-        }
+            let (mut y_cursor, mut x_cursor) = self.window.get_cur_yx();
 
-        window.refresh();
+            if self.vertical {
+                y_cursor += 2;
+            } else {
+                x_cursor += 1;
+            }
+
+            self.window.mv(y_cursor, x_cursor);
+            self.window.printw(&curr_option.name);
+        });
+
+        self.window.refresh();
     }
 
-    fn update(&mut self) {
-        match self.get_window().getch() {
+    fn update(&mut self) -> Option<MenusMessage> {
+        self.window.keypad(true);
+        match self.window.getch() {
             Some(input) => self.handle_input(input),
-            None => return,
+            None => None,
         }
     }
 
-    fn give_focus(&mut self) {
-        self.set_requires_focus(true);
-        self.draw();
-        self.update();
+    pub fn give_focus(&mut self) {
+        self.requires_focus = true;
     }
 
-    fn handle_input(&mut self, i: Input) {
-        if self.is_vertical() {
+    pub fn tick(&mut self) -> Option<MenusMessage> {
+        self.draw();
+        self.update()
+    }
+
+    fn handle_input(&mut self, i: Input) -> Option<MenusMessage> {
+        if self.vertical {
             match i {
-                Input::KeyDown => self.goto_next_option(),
-                Input::KeyUp => self.goto_prev_option(),
-                Input::KeyEnter => self.validate(),
-                _ => return,
+                Input::KeyDown => {
+                    self.next_option();
+                    return None;
+                }
+                Input::KeyUp => {
+                    self.prev_option();
+                    return None;
+                }
+                Input::Character(c) if c == '\n' => return self.validate(),
+                _ => return None,
             }
         } else {
             match i {
-                Input::KeyRight => self.goto_next_option(),
-                Input::KeyLeft => self.goto_prev_option(),
-                Input::KeyEnter => self.validate(),
-                _ => return,
+                Input::KeyRight => {
+                    self.next_option();
+                    return None;
+                }
+                Input::KeyLeft => {
+                    self.prev_option();
+                    return None;
+                }
+                Input::Character(c) if c == '\n' => return self.validate(),
+                _ => return None,
             }
         }
     }
 
-    fn goto_next_option(&mut self) {
-        let mut option: i32 = self.get_focused_option_index() + 1;
-
-        if option > self.get_option_count() {
-            option = 0;
+    fn next_option(&mut self) {
+        self.selected_index += 1;
+        if self.selected_index >= self.options.len() {
+            self.selected_index = 0;
         }
-
-        self.set_focused_option_index(option);
     }
 
-    fn goto_prev_option(&mut self) {
-        let mut option: i32 = self.get_focused_option_index() + 1;
-
-        if option < 0 {
-            option = self.get_option_count() - 1;
+    fn prev_option(&mut self) {
+        if let Some(new_index) = self.selected_index.checked_sub(1) {
+            self.selected_index = new_index;
+        } else {
+            self.selected_index = self.options.len() - 1;
         }
-
-        self.set_focused_option_index(option);
     }
 
-    fn validate(&mut self) {
-        (self.get_list_options()[self.get_focused_option_index() as usize].callback)();
-        self.set_requires_focus(false);
+    fn validate(&mut self) -> Option<MenusMessage> {
+        self.requires_focus = false;
+        Some(self.options[self.selected_index].message)
     }
 
+    pub fn requires_focus(&self) -> bool {
+        self.requires_focus
+    }
+}
 
-    fn set_requires_focus(&mut self, focus: bool);
-    fn requires_focus(&self) -> bool;
-    fn is_vertical(&self) -> bool;
+pub struct MenuBuilder {
+    options: Vec<MenuOption>,
+    selected_index: usize,
+    window: Option<Window>,
+    vertical: bool,
+}
 
-    fn get_option_count(&self) -> i32 {
-        self.get_list_options().len() as i32
+impl MenuBuilder {
+    pub fn new() -> Self {
+        MenuBuilder {
+            options: Vec::new(),
+            selected_index: 0,
+            window: None,
+            vertical: false,
+        }
     }
 
-    fn get_focused_option_index(&self) -> i32;
-    fn set_focused_option_index(&mut self, index: i32);
+    pub fn with_option(mut self, opt: MenuOption) -> Self {
+        self.options.push(opt);
+        self
+    }
+    pub fn set_vertical(mut self, is_vertical: bool) -> Self {
+        self.vertical = is_vertical;
+        self
+    }
+    pub fn set_start_index(mut self, index: usize) -> Self {
+        self.selected_index = index;
+        self
+    }
 
-    fn get_window(&self) -> &Window;
+    pub fn set_window(mut self, window: Window) -> Self {
+        self.window = Some(window);
+        self
+    }
 
-    fn get_list_options(&self) -> &Vec<MenuOption>;
-    fn get_list_options_mutable(&mut self) -> &mut Vec<MenuOption>;
-
-    fn register_option(&mut self, option: MenuOption) {
-        self.get_list_options_mutable().push(option);
+    pub fn build(self) -> Menu {
+        Menu {
+            options: self.options,
+            selected_index: self.selected_index,
+            window: self.window.unwrap(),
+            vertical: self.vertical,
+            requires_focus: false,
+        }
     }
 }

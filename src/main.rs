@@ -20,5 +20,4 @@ fn main() {
 
     // Cleanup
     endwin();
-
 }
