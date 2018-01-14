@@ -1,5 +1,6 @@
 use pancurses::Window;
 
+#[derive(PartialEq, Eq, Clone)]
 pub enum TypeCase {
     Void,
     Wall,
@@ -7,15 +8,24 @@ pub enum TypeCase {
     EndPoint,
 }
 
+impl TypeCase {
+    pub fn from_u8(u: u8) -> Self {
+        match u {
+            48 => TypeCase::Void,
+            49 => TypeCase::Wall,
+            50 => TypeCase::EndPoint,
+            51 => TypeCase::StartPoint,
+            _ => unreachable!(),
+        }
+    }
 
-
-pub fn u8_to_typecase(u: u8) -> TypeCase {
-    match u {
-        48 => TypeCase::Void,
-        49 => TypeCase::Wall,
-        50 => TypeCase::EndPoint,
-        51 => TypeCase::StartPoint,
-        _ => unreachable!(),
+    pub fn to_str(&self) -> &str {
+        match *self {
+            TypeCase::Void => "1",
+            TypeCase::Wall => "2",
+            TypeCase::EndPoint => "3",
+            TypeCase::StartPoint => "4",
+        }
     }
 }
 
@@ -68,6 +78,10 @@ impl Case {
     }
 
     pub fn draw(&self, win: &Window) {
-        win.mvprintw(self.x, self.y, self.get_char_representation());
+        win.mvprintw(self.y, self.x, self.get_char_representation());
+    }
+
+    pub fn get_flag_str(&self) -> &str {
+        self.flag.to_str()
     }
 }

@@ -1,8 +1,6 @@
 use pancurses::{Input, Window, A_REVERSE};
 use menu::menuhandler::MenusMessage;
 
-use application::application::Application;
-
 pub struct MenuOption {
     pub name: String,
     pub message: MenusMessage,
@@ -29,27 +27,28 @@ impl Menu {
     fn draw(&self) {
         self.window.attroff(A_REVERSE);
         self.window.draw_box('|', '-');
-
         self.window.mv(1, 1);
 
-        self.options.iter().enumerate().for_each(|(index, curr_option)| {
-            if index == self.selected_index {
-                self.window.attron(A_REVERSE);
-            } else {
-                self.window.attroff(A_REVERSE);
-            }
+        self.options.iter().enumerate().for_each(
+            |(index, curr_option)| {
+                if index == self.selected_index {
+                    self.window.attron(A_REVERSE);
+                } else {
+                    self.window.attroff(A_REVERSE);
+                }
 
-            let (mut y_cursor, mut x_cursor) = self.window.get_cur_yx();
+                let (mut y_cursor, mut x_cursor) = self.window.get_cur_yx();
 
-            if self.vertical {
-                y_cursor += 2;
-            } else {
-                x_cursor += 1;
-            }
+                if self.vertical {
+                    y_cursor += 2;
+                } else {
+                    x_cursor += 1;
+                }
 
-            self.window.mv(y_cursor, x_cursor);
-            self.window.printw(&curr_option.name);
-        });
+                self.window.mv(y_cursor, x_cursor);
+                self.window.printw(&curr_option.name);
+            },
+        );
 
         self.window.refresh();
     }

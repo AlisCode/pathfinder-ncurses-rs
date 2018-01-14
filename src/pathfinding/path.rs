@@ -1,4 +1,4 @@
-use pathfinding::node::Node;
+use pathfinder_ncurses_rs::pathfinding::node::Node;
 use pancurses::Window;
 
 pub struct Path {

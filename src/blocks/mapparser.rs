@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 use blocks::map::Map;
-use blocks::case::{Case, u8_to_typecase};
+use blocks::case::{Case, TypeCase};
 
 /// Stores the basic informations about a map
 #[derive(Debug)]
@@ -39,9 +39,11 @@ impl MapInfos {
         for (i, val) in self.flags.into_iter().enumerate() {
             let x = i as i32 % self.width + 1;
             let y = i as i32 / self.width + 1;
-            let case: Case = Case::new(x, y, u8_to_typecase(val));
+            let case: Case = Case::new(x, y, TypeCase::from_u8(val));
             m.add_case(case);
         }
+
+        m.set_width_height(self.width, self.height);
 
         m
     }

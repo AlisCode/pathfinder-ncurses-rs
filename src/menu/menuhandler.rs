@@ -1,8 +1,6 @@
 use pancurses::newwin;
 
-use application::application::Application;
 use menu::menu::{Menu, MenuOption, MenuBuilder};
-
 use menu::mainmenu::MainMenuMessage;
 use menu::selecttypemenu::SelectTypeMenuMessage;
 
@@ -34,15 +32,26 @@ pub struct MenuHandler {
 
 impl MenuHandler {
     pub fn new(max_x: i32, max_y: i32) -> Self {
-        let main_menu =
-            MenuBuilder::new()
-                .set_vertical(false)
-                .set_window(newwin(3, max_x, max_y - 3, 0))
-                .with_option(MenuOption::new("edit", MenusMessage::Main(MainMenuMessage::Edit)))
-                .with_option(MenuOption::new("load", MenusMessage::Main(MainMenuMessage::Load)))
-                .with_option(MenuOption::new("save", MenusMessage::Main(MainMenuMessage::Save)))
-                .with_option(MenuOption::new("quit", MenusMessage::Main(MainMenuMessage::Quit)))
-                .build();
+        let main_menu = MenuBuilder::new()
+            .set_vertical(false)
+            .set_window(newwin(3, max_x, max_y - 3, 0))
+            .with_option(MenuOption::new(
+                "edit",
+                MenusMessage::Main(MainMenuMessage::Edit),
+            ))
+            .with_option(MenuOption::new(
+                "load",
+                MenusMessage::Main(MainMenuMessage::Load),
+            ))
+            .with_option(MenuOption::new(
+                "save",
+                MenusMessage::Main(MainMenuMessage::Save),
+            ))
+            .with_option(MenuOption::new(
+                "quit",
+                MenusMessage::Main(MainMenuMessage::Quit),
+            ))
+            .build();
 
         MenuHandler {
             menus: vec![main_menu],
@@ -66,7 +75,9 @@ impl MenuHandler {
         let index = new_menu.into();
         assert!(index < self.menus.len());
         self.focused_menu = Some(index);
-        if let Some(menu) = self.get_current_menu() { menu.give_focus(); }
+        if let Some(menu) = self.get_current_menu() {
+            menu.give_focus();
+        }
     }
 
     pub fn has_focus(&self) -> bool {

@@ -1,5 +1,6 @@
 use pancurses::*;
 use blocks::map::Map;
+use application::mapwindow::MapWindow;
 
 use menu::menuhandler::{MenuHandler, Menus, MenusMessage};
 use menu::mainmenu::MainMenuMessage;
@@ -9,8 +10,7 @@ pub struct Application {
     running: bool,
     stdscr: Window,
     menu_handler: MenuHandler,
-    map_window: Window,
-    map: Map,
+    map_window: MapWindow,
 }
 
 impl Application {
@@ -19,12 +19,12 @@ impl Application {
         let max_x: i32 = stdscr.get_max_x();
         let max_y: i32 = stdscr.get_max_y();
 
-        // Creates the map window
-        let map_window: Window = newwin(max_y, max_x, 0, 0);
-
         // Creates the map itself
         let mut map: Map = Map::new();
         map.create_empty(10, 10);
+
+        // Creates the map window
+        let map_window: MapWindow = MapWindow::new(max_x, max_y, map);
 
         // Returns the application struct
         Application {
@@ -32,7 +32,6 @@ impl Application {
             stdscr: stdscr,
             map_window: map_window,
             menu_handler: MenuHandler::new(max_x, max_y),
-            map: map,
         }
     }
 
@@ -58,10 +57,12 @@ impl Application {
 
     // Update the application
     fn update(&mut self) {
-        self.map.draw(&self.map_window);
 
-        let has_focus: bool = self.menu_handler.has_focus();
-        if has_focus {
+        self.map_window.draw();
+        self.map_window.give_focus();
+
+        let menu_has_focus: bool = self.menu_handler.has_focus();
+        if menu_has_focus {
             let message = self.menu_handler.update();
             self.handle_message(message);
         } else {
@@ -111,7 +112,7 @@ impl Application {
     /// Handles the given message if it came from the main menu
     fn handle_menu_main_message(&mut self, message: MainMenuMessage) {
         match message {
-            MainMenuMessage::Edit => (),
+            MainMenuMessage::Edit => self.map_window.go_edit_mode(),
             MainMenuMessage::Load => (),
             MainMenuMessage::Save => (),
             MainMenuMessage::Quit => self.quit(),
