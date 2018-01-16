@@ -4,6 +4,7 @@ use pancurses::{Window, A_REVERSE};
 use application::mapwindow::MapWindowMode;
 
 use std::fs::File;
+use std::path::Path;
 use std::io::prelude::*;
 
 pub struct Map {
@@ -97,7 +98,7 @@ impl Map {
     pub fn save(&self) -> Result<(), String> {
         let filename: String = format!("{}.map", &self.name);
 
-        match File::create(Path::new(filename)) {
+        match File::create(Path::new(&filename)) {
             Ok(_) => (),
             Err(err) => return Err(format!("Could not create file : {:?}", err)),
         }
