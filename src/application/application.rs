@@ -57,7 +57,6 @@ impl Application {
 
     // Update the application
     fn update(&mut self) {
-
         self.map_window.draw();
         self.map_window.give_focus();
 
@@ -114,7 +113,7 @@ impl Application {
         match message {
             MainMenuMessage::Edit => self.map_window.go_edit_mode(),
             MainMenuMessage::Load => (),
-            MainMenuMessage::Save => (),
+            MainMenuMessage::Save => self.map_window.save_map(),
             MainMenuMessage::Quit => self.quit(),
         }
     }

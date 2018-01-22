@@ -82,6 +82,10 @@ impl Menu {
                     return None;
                 }
                 Input::Character(c) if c == '\n' => return self.validate(),
+                Input::Character(c) if c == '\u{1b}' => {
+                    self.quit();
+                    return None;
+                }
                 _ => return None,
             }
         } else {
@@ -95,6 +99,10 @@ impl Menu {
                     return None;
                 }
                 Input::Character(c) if c == '\n' => return self.validate(),
+                Input::Character(c) if c == '\u{1b}' => {
+                    self.quit();
+                    return None;
+                }
                 _ => return None,
             }
         }
@@ -118,6 +126,11 @@ impl Menu {
     fn validate(&mut self) -> Option<MenusMessage> {
         self.requires_focus = false;
         Some(self.options[self.selected_index].message)
+    }
+
+    fn quit(&mut self) {
+        eprintln!("Quitting menu");
+        self.requires_focus = false;
     }
 
     pub fn requires_focus(&self) -> bool {

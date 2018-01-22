@@ -36,7 +36,6 @@ impl MapWindow {
             &self.edit_position_y,
             &self.mode,
         );
-
     }
 
     pub fn go_edit_mode(&mut self) {
@@ -53,7 +52,6 @@ impl MapWindow {
     }
 
     pub fn update(&mut self) {
-
         match self.mode {
             // Temporary: bounds the edit to the window
             // TODO: handle this better once I get a camera of some sort :)
@@ -61,13 +59,13 @@ impl MapWindow {
                 self.window.keypad(true);
                 match self.window.getch() {
                     Some(Input::KeyLeft) if self.edit_position_x >= 2 => self.edit_position_x -= 1,
-                    Some(Input::KeyRight) if self.edit_position_x < self.map.get_size_x() - 1 => {
+                    Some(Input::KeyRight) if self.edit_position_x < self.map.get_size_x() => {
                         self.edit_position_x += 1
                     }
                     Some(Input::KeyUp) if self.edit_position_y >= 2 => self.edit_position_y -= 1,
-                    Some(Input::KeyDown) if self.edit_position_y < self.map.get_size_y() - 1 => {
+                    Some(Input::KeyDown) if self.edit_position_y < self.map.get_size_y() => {
                         self.edit_position_y += 1
-                    }
+                    } 
                     Some(Input::Character(' ')) => {
                         self.map.set_case(
                             &self.edit_position_x,
@@ -75,13 +73,18 @@ impl MapWindow {
                             &self.type_case,
                         );
                     }
-                    Some(Input::Unknown(i)) => eprintln!("Unknown: {:?}", i),
-                    Some(Input::Character(c)) if c == '\u{1b}' => self.mode = MapWindowMode::Normal, 
+                    Some(Input::Unknown(_)) => (),
+                    Some(Input::Character(c)) if c == '\u{1b}' => self.mode = MapWindowMode::Normal,
                     _ => eprintln!("other"),
                 }
-            } 
+            }
             MapWindowMode::Normal => (),
         }
+    }
 
+    pub fn save_map(&self) {
+        match self.map.save() {
+            _ => (),
+        }
     }
 }

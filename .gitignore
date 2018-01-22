@@ -2,3 +2,4 @@
 **/*.rs.bk
 *.fmt
 *.map
+/cmake-debug-build/
