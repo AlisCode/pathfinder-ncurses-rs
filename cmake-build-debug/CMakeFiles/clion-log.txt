@@ -1,1 +1,0 @@
-CMakeLists.txt not found in /home/olivier/Workspace/Rust/pathfinder-ncurses-rs

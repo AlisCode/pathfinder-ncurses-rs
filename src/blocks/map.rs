@@ -52,11 +52,11 @@ impl Map {
                 self.list_items.iter().for_each(
                     |case| if case.get_x() == edit_x &&
                         case.get_y() == edit_y
-                        {
-                            window.attron(A_REVERSE);
-                            case.draw(&window);
-                            window.attroff(A_REVERSE);
-                        } else {
+                    {
+                        window.attron(A_REVERSE);
+                        case.draw(&window);
+                        window.attroff(A_REVERSE);
+                    } else {
                         case.draw(&window);
                     },
                 );
@@ -110,12 +110,8 @@ impl Map {
                     }
                     acc
                 });
-                let to_write: String = format!(
-                    "w:{}\nh:{}\nd:\n{}",
-                    self.size_x,
-                    self.size_y,
-                    flags
-                );
+                let to_write: String =
+                    format!("w:{}\nh:{}\nd:\n{}", self.size_x, self.size_y, flags);
 
                 match file.write_all(to_write.as_bytes()) {
                     Ok(_) => Ok(()),

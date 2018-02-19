@@ -25,12 +25,21 @@ pub struct Menu {
 
 impl Menu {
     fn draw(&self) {
+        // Places the cursor adequately
+        self.window.clear();
         self.window.attroff(A_REVERSE);
         self.window.draw_box('|', '-');
-        self.window.mv(1, 1);
 
+        if !self.vertical {
+            self.window.mv(1, 1);
+        }
+        
+
+        // Displays all the options of the menu
         self.options.iter().enumerate().for_each(
             |(index, curr_option)| {
+
+                // Sets the highlighted option 
                 if index == self.selected_index {
                     self.window.attron(A_REVERSE);
                 } else {
@@ -39,17 +48,21 @@ impl Menu {
 
                 let (mut y_cursor, mut x_cursor) = self.window.get_cur_yx();
 
+                // Moves the cursor to display the next option
                 if self.vertical {
-                    y_cursor += 2;
+                    y_cursor += 1;
+                    x_cursor = 1;
                 } else {
                     x_cursor += 1;
                 }
-
                 self.window.mv(y_cursor, x_cursor);
+
+                // Effectively displays the option
                 self.window.printw(&curr_option.name);
             },
         );
 
+        // Refreshes the window so all of what we just drawn now gets displayed on the screen
         self.window.refresh();
     }
 
@@ -129,7 +142,6 @@ impl Menu {
     }
 
     fn quit(&mut self) {
-        eprintln!("Quitting menu");
         self.requires_focus = false;
     }
 

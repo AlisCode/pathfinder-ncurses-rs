@@ -4,7 +4,9 @@ use menu::menu::{Menu, MenuOption, MenuBuilder};
 use menu::mainmenu::MainMenuMessage;
 use menu::selecttypemenu::SelectTypeMenuMessage;
 
-#[derive(Copy, Clone)]
+use blocks::case::TypeCase;
+
+#[derive(Copy, Clone, Debug)]
 pub enum Menus {
     Main,
     SelectType,
@@ -39,6 +41,10 @@ impl MenuHandler {
                 "edit",
                 MenusMessage::Main(MainMenuMessage::Edit),
             ))
+            .with_option(MenuOption::new( 
+                "solve",
+                MenusMessage::Main(MainMenuMessage::Solve),
+            ))
             .with_option(MenuOption::new(
                 "load",
                 MenusMessage::Main(MainMenuMessage::Load),
@@ -53,8 +59,37 @@ impl MenuHandler {
             ))
             .build();
 
+        let edit_menu = MenuBuilder::new()
+            .set_vertical(true)
+            .set_window(newwin(6, 10, 0, 0))
+            .with_option(MenuOption::new(
+                "X Block",
+                MenusMessage::SelectType(
+                    SelectTypeMenuMessage::ChangeTypeCase(TypeCase::Wall),
+                ),
+            ))
+            .with_option(MenuOption::new(
+                ". Void",
+                MenusMessage::SelectType(
+                    SelectTypeMenuMessage::ChangeTypeCase(TypeCase::Void),
+                ),
+            ))
+            .with_option(MenuOption::new(
+                "S Start",
+                MenusMessage::SelectType(
+                    SelectTypeMenuMessage::ChangeTypeCase(TypeCase::StartPoint),
+                ),
+            ))
+            .with_option(MenuOption::new(
+                "E End",
+                MenusMessage::SelectType(
+                    SelectTypeMenuMessage::ChangeTypeCase(TypeCase::EndPoint),
+                ),
+            ))
+            .build();
+
         MenuHandler {
-            menus: vec![main_menu],
+            menus: vec![main_menu, edit_menu],
             focused_menu: Option::None,
         }
     }
@@ -91,7 +126,6 @@ impl MenuHandler {
     pub fn update(&mut self) -> Option<MenusMessage> {
         let mut loses_focus: bool = false;
         let mut opt_message: Option<MenusMessage> = None;
-
 
         match self.get_current_menu() {
             Some(menu) => {

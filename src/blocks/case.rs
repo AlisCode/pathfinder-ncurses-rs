@@ -1,6 +1,6 @@
 use pancurses::Window;
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum TypeCase {
     Void,
     Wall,

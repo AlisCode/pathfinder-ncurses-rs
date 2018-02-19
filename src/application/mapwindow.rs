@@ -2,6 +2,9 @@ use pancurses::{Window, newwin, Input};
 use blocks::map::Map;
 use blocks::case::TypeCase;
 
+use menu::menuhandler::MenuHandler;
+use menu::menuhandler::Menus;
+
 #[derive(PartialEq, Eq)]
 pub enum MapWindowMode {
     Normal,
@@ -15,6 +18,7 @@ pub struct MapWindow {
     type_case: TypeCase,
     edit_position_x: i32,
     edit_position_y: i32,
+    menu_type_focusing: bool,
 }
 
 impl MapWindow {
@@ -26,6 +30,7 @@ impl MapWindow {
             type_case: TypeCase::Wall,
             edit_position_x: 1,
             edit_position_y: 1,
+            menu_type_focusing: false,
         }
     }
 
@@ -42,12 +47,17 @@ impl MapWindow {
         self.mode = MapWindowMode::Edit;
     }
 
-    pub fn give_focus(&mut self) {
+    pub fn give_focus(&mut self, menu_handler: &mut MenuHandler ) {
         self.update();
         self.draw();
         while self.mode == MapWindowMode::Edit {
             self.update();
             self.draw();
+
+            if self.menu_type_focusing {
+                menu_handler.give_focus(Menus::SelectType);
+                return;
+            }
         }
     }
 
@@ -72,7 +82,10 @@ impl MapWindow {
                             &self.edit_position_y,
                             &self.type_case,
                         );
-                    }
+                    },
+                    Some(Input::Character('e')) => {
+                        self.menu_type_focusing = true;
+                    },
                     Some(Input::Unknown(_)) => (),
                     Some(Input::Character(c)) if c == '\u{1b}' => self.mode = MapWindowMode::Normal,
                     _ => eprintln!("other"),
@@ -80,6 +93,18 @@ impl MapWindow {
             }
             MapWindowMode::Normal => (),
         }
+    }
+
+    pub fn set_type_case(&mut self, type_case: TypeCase) {
+        self.type_case = type_case;
+    }
+
+    pub fn needs_menu_type_focusing(&self) -> bool {
+        self.menu_type_focusing
+    }
+
+    pub fn set_menu_type_focus(&mut self, new_focus: bool) {
+        self.menu_type_focusing = new_focus;
     }
 
     pub fn save_map(&self) {

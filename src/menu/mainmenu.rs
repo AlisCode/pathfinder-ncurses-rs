@@ -4,5 +4,6 @@ pub enum MainMenuMessage {
     Load,
     Save,
     Quit,
+    Solve,
 }
 

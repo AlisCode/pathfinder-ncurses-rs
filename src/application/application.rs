@@ -58,7 +58,9 @@ impl Application {
     // Update the application
     fn update(&mut self) {
         self.map_window.draw();
-        self.map_window.give_focus();
+        if !self.map_window.needs_menu_type_focusing() {
+            self.map_window.give_focus(&mut self.menu_handler);
+        }
 
         let menu_has_focus: bool = self.menu_handler.has_focus();
         if menu_has_focus {
@@ -115,12 +117,19 @@ impl Application {
             MainMenuMessage::Load => (),
             MainMenuMessage::Save => self.map_window.save_map(),
             MainMenuMessage::Quit => self.quit(),
+            MainMenuMessage::Solve => (),
         }
     }
 
+    /// Handles the given message if it came from the select type menu
     fn handle_menu_select_type_message(&mut self, message: SelectTypeMenuMessage) {
+        // This is handled as a match, because I might need to add other types of messages
+        // Plus, it's convenient. 
         match message {
-            SelectTypeMenuMessage::Edit => (),
+            SelectTypeMenuMessage::ChangeTypeCase(type_case) => { 
+                self.map_window.set_type_case(type_case);
+                self.map_window.set_menu_type_focus(false);
+            },
         }
     }
 
