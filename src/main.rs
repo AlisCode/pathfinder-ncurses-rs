@@ -3,6 +3,7 @@ extern crate nom;
 extern crate pancurses;
 
 pub mod blocks;
+pub mod pathfinding;
 pub mod menu;
 pub mod application;
 

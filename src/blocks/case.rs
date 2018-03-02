@@ -1,6 +1,8 @@
 use pancurses::Window;
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+use pathfinding::node::Node;
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum TypeCase {
     Void,
     Wall,
@@ -11,10 +13,10 @@ pub enum TypeCase {
 impl TypeCase {
     pub fn from_u8(u: u8) -> Self {
         match u {
-            48 => TypeCase::Void,
-            49 => TypeCase::Wall,
-            50 => TypeCase::EndPoint,
-            51 => TypeCase::StartPoint,
+            49 => TypeCase::Void,
+            50 => TypeCase::Wall,
+            51 => TypeCase::EndPoint,
+            52 => TypeCase::StartPoint,
             _ => unreachable!(),
         }
     }
@@ -29,6 +31,7 @@ impl TypeCase {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Case {
     x: i32,
     y: i32,
@@ -83,5 +86,24 @@ impl Case {
 
     pub fn get_flag_str(&self) -> &str {
         self.flag.to_str()
+    }
+
+    pub fn is_start_point(&self) -> bool {
+        self.flag == TypeCase::StartPoint
+    }
+
+    pub fn is_end_point(&self) -> bool {
+        self.flag == TypeCase::EndPoint
+    }
+
+    pub fn is_crossable(&self) -> bool {
+        match self.flag {
+            TypeCase::Wall => false,
+            _ => true,
+        }
+    }
+
+    pub fn create_node(&self) -> Node {
+        Node::new(self.x, self.y)
     }
 }

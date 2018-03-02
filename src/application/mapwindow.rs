@@ -112,4 +112,8 @@ impl MapWindow {
             _ => (),
         }
     }
+
+    pub fn solve_map(&self) {
+        
+    }
 }

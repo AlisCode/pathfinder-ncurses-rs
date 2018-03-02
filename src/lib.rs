@@ -5,4 +5,4 @@ extern crate pancurses;
 pub mod application;
 pub mod blocks;
 pub mod menu;
-//pub mod pathfinding;
+pub mod pathfinding;

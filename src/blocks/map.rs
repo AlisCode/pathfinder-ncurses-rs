@@ -2,6 +2,7 @@ use blocks::case::{Case, TypeCase};
 
 use pancurses::{Window, A_REVERSE};
 use application::mapwindow::MapWindowMode;
+use pathfinding::resolver::{Resolver, ResolverError};
 
 use std::fs::File;
 use std::path::Path;
@@ -9,7 +10,7 @@ use std::io::prelude::*;
 
 pub struct Map {
     name: String,
-    list_items: Vec<Case>,
+    pub list_items: Vec<Case>,
     size_x: i32,
     size_y: i32,
 }
@@ -68,8 +69,8 @@ impl Map {
     }
 
     pub fn create_empty(&mut self, size_x: i32, size_y: i32) {
-        for x in 1..size_x + 1 {
-            for y in 1..size_y + 1 {
+        for y in 1..size_y + 1 {
+            for x in 1..size_x + 1 {
                 self.list_items.push(Case::new(x, y, TypeCase::Void));
             }
         }
@@ -124,5 +125,9 @@ impl Map {
 
     pub fn set_name(&mut self, new_name: String) {
         self.name = new_name;
+    }
+
+    pub fn solve(&self) {
+        let resolver: Result<Resolver, ResolverError> = Resolver::try_new(&self.list_items);
     }
 }

@@ -117,7 +117,7 @@ impl Application {
             MainMenuMessage::Load => (),
             MainMenuMessage::Save => self.map_window.save_map(),
             MainMenuMessage::Quit => self.quit(),
-            MainMenuMessage::Solve => (),
+            MainMenuMessage::Solve => self.map_window.solve_map(),
         }
     }
 
