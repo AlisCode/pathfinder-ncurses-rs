@@ -1,14 +1,15 @@
 #[macro_use]
 extern crate nom;
 extern crate pancurses;
+extern crate pathfinding;
+
+use application::application::Application;
+use pancurses::*;
 
 pub mod blocks;
-pub mod pathfinding;
+pub mod path;
 pub mod menu;
 pub mod application;
-
-use pancurses::*;
-use application::application::Application;
 
 fn main() {
 

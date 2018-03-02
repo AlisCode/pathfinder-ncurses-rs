@@ -7,3 +7,4 @@ authors = ["olivier"]
 pancurses = "*"
 byteorder = "*"
 nom = "*"
+pathfinding = "*"

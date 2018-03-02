@@ -1,6 +1,5 @@
 use pancurses::Window;
-
-use pathfinding::node::Node;
+use path::node::Node;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum TypeCase {
@@ -8,6 +7,7 @@ pub enum TypeCase {
     Wall,
     StartPoint,
     EndPoint,
+    Pathfinding,
 }
 
 impl TypeCase {
@@ -27,6 +27,7 @@ impl TypeCase {
             TypeCase::Wall => "2",
             TypeCase::EndPoint => "3",
             TypeCase::StartPoint => "4",
+            TypeCase::Pathfinding => "1",
         }
     }
 }
@@ -77,6 +78,7 @@ impl Case {
             TypeCase::Wall => "X",
             TypeCase::StartPoint => "S",
             TypeCase::EndPoint => "E",
+            TypeCase::Pathfinding => "*",
         }
     }
 

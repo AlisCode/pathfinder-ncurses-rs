@@ -1,12 +1,11 @@
-use blocks::case::{Case, TypeCase};
-
-use pancurses::{Window, A_REVERSE};
 use application::mapwindow::MapWindowMode;
-use pathfinding::resolver::{Resolver, ResolverError};
-
+use blocks::case::{Case, TypeCase};
+use pancurses::{A_REVERSE, Window};
+use path::node::Node;
+use path::resolver::{Resolver, ResolverError};
 use std::fs::File;
-use std::path::Path;
 use std::io::prelude::*;
+use std::path::Path;
 
 pub struct Map {
     name: String,
@@ -53,11 +52,11 @@ impl Map {
                 self.list_items.iter().for_each(
                     |case| if case.get_x() == edit_x &&
                         case.get_y() == edit_y
-                    {
-                        window.attron(A_REVERSE);
-                        case.draw(&window);
-                        window.attroff(A_REVERSE);
-                    } else {
+                        {
+                            window.attron(A_REVERSE);
+                            case.draw(&window);
+                            window.attroff(A_REVERSE);
+                        } else {
                         case.draw(&window);
                     },
                 );
@@ -127,7 +126,28 @@ impl Map {
         self.name = new_name;
     }
 
-    pub fn solve(&self) {
+    pub fn solve(&mut self) {
         let resolver: Result<Resolver, ResolverError> = Resolver::try_new(&self.list_items);
+
+        match resolver {
+            Ok(solver) => {
+                match solver.resolve() {
+                    Ok(path) => {
+                        self.apply_path(path);
+                    }
+                    Err(e) => eprintln!("Error: {:?}", e),
+                }
+            }
+            Err(err) => {
+                eprintln!("Error: {:?}", err);
+            }
+        }
+    }
+
+    fn apply_path(&mut self, path: Vec<Node>) {
+        path.into_iter().for_each(|n| {
+            let (x, y) = n.get_coordinates();
+            self.set_case(x, y, &TypeCase::Pathfinding);
+        });
     }
 }

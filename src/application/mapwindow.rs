@@ -1,9 +1,8 @@
-use pancurses::{Window, newwin, Input};
-use blocks::map::Map;
 use blocks::case::TypeCase;
-
+use blocks::map::Map;
 use menu::menuhandler::MenuHandler;
 use menu::menuhandler::Menus;
+use pancurses::{Input, newwin, Window};
 
 #[derive(PartialEq, Eq)]
 pub enum MapWindowMode {
@@ -47,7 +46,7 @@ impl MapWindow {
         self.mode = MapWindowMode::Edit;
     }
 
-    pub fn give_focus(&mut self, menu_handler: &mut MenuHandler ) {
+    pub fn give_focus(&mut self, menu_handler: &mut MenuHandler) {
         self.update();
         self.draw();
         while self.mode == MapWindowMode::Edit {
@@ -75,17 +74,17 @@ impl MapWindow {
                     Some(Input::KeyUp) if self.edit_position_y >= 2 => self.edit_position_y -= 1,
                     Some(Input::KeyDown) if self.edit_position_y < self.map.get_size_y() => {
                         self.edit_position_y += 1
-                    } 
+                    }
                     Some(Input::Character(' ')) => {
                         self.map.set_case(
                             &self.edit_position_x,
                             &self.edit_position_y,
                             &self.type_case,
                         );
-                    },
+                    }
                     Some(Input::Character('e')) => {
                         self.menu_type_focusing = true;
-                    },
+                    }
                     Some(Input::Unknown(_)) => (),
                     Some(Input::Character(c)) if c == '\u{1b}' => self.mode = MapWindowMode::Normal,
                     _ => eprintln!("other"),
@@ -113,7 +112,7 @@ impl MapWindow {
         }
     }
 
-    pub fn solve_map(&self) {
-        
+    pub fn solve_map(&mut self) {
+        self.map.solve();
     }
 }

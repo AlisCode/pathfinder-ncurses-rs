@@ -1,11 +1,10 @@
 extern crate pathfinder_ncurses_rs;
 
 use pathfinder_ncurses_rs::blocks::map::Map;
-use pathfinder_ncurses_rs::blocks::mapparser::{MapInfos, load_map};
-
+use pathfinder_ncurses_rs::blocks::mapparser::{load_map, MapInfos};
 use std::fs::File;
-use std::path::Path;
 use std::io::prelude::*;
+use std::path::Path;
 
 #[test]
 fn test_map_write() {
@@ -36,8 +35,8 @@ fn test_map_read() {
     let result_load_map = load_map("./tests/10x10_empty.map".into());
     assert_eq!(result_load_map.is_ok(), true);
 
-    let mut map_infos: MapInfos = result_load_map.unwrap();
-    let mut map = map_infos.create_map();
+    let map_infos: MapInfos = result_load_map.unwrap();
+    let map = map_infos.create_map();
 
     map.list_items
         .into_iter()
