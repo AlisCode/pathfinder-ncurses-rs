@@ -1,10 +1,9 @@
-use pancurses::*;
-use blocks::map::Map;
 use application::mapwindow::MapWindow;
-
-use menu::menuhandler::{MenuHandler, Menus, MenusMessage};
+use blocks::map::Map;
 use menu::mainmenu::MainMenuMessage;
+use menu::menuhandler::{MenuHandler, Menus, MenusMessage};
 use menu::selecttypemenu::SelectTypeMenuMessage;
+use pancurses::*;
 
 pub struct Application {
     running: bool,
@@ -29,8 +28,8 @@ impl Application {
         // Returns the application struct
         Application {
             running: false,
-            stdscr: stdscr,
-            map_window: map_window,
+            stdscr,
+            map_window,
             menu_handler: MenuHandler::new(max_x, max_y),
         }
     }
@@ -126,10 +125,10 @@ impl Application {
         // This is handled as a match, because I might need to add other types of messages
         // Plus, it's convenient. 
         match message {
-            SelectTypeMenuMessage::ChangeTypeCase(type_case) => { 
+            SelectTypeMenuMessage::ChangeTypeCase(type_case) => {
                 self.map_window.set_type_case(type_case);
                 self.map_window.set_menu_type_focus(false);
-            },
+            }
         }
     }
 

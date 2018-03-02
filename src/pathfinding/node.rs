@@ -1,6 +1,6 @@
-use std::rc::Rc;
 use std::cell::RefCell;
 use std::cmp::Ordering;
+use std::rc::Rc;
 
 #[derive(Debug, PartialEq)]
 pub struct Node {
@@ -33,7 +33,6 @@ impl Node {
     }
 
     pub fn calculate_costs(&mut self, end: &Node) {
-
         match self.parent {
             Some(ref parent_rc) => {
                 let parent = parent_rc.borrow();
@@ -44,7 +43,6 @@ impl Node {
 
         self.hcost = end.get_distance(self.x, self.y);
         self.fcost = self.hcost + self.gcost;
-
     }
 
     pub fn sort_by_fcost(&self, other: &Node) -> Ordering {
@@ -52,9 +50,9 @@ impl Node {
     }
 
     pub fn compare_fcost(&self, fcost: f32) -> Ordering {
-        if (self.fcost > fcost) {
+        if self.fcost > fcost {
             return Ordering::Less;
-        } else if (self.fcost < fcost) {
+        } else if self.fcost < fcost {
             return Ordering::Greater;
         }
         Ordering::Equal

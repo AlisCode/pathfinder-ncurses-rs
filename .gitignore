@@ -1,6 +1,5 @@
 /target/
 **/*.rs.bk
 *.fmt
-*.map
 /cmake-debug-build/
 .idea/

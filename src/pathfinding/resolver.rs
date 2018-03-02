@@ -32,7 +32,7 @@ impl Resolver {
 
         let start_point: Option<Node> = list_cases
             .iter()
-            .filter_map(|a| match a.is_start_point() { 
+            .filter_map(|a| match a.is_start_point() {
                 true => Some(a.create_node()),
                 false => None,
             })
@@ -40,7 +40,7 @@ impl Resolver {
 
         let end_point: Option<Node> = list_cases
             .iter()
-            .filter_map(|a| match a.is_end_point() { 
+            .filter_map(|a| match a.is_end_point() {
                 true => Some(a.create_node()),
                 false => None,
             })
@@ -61,23 +61,16 @@ impl Resolver {
     }
 
     pub fn resolve(&mut self) -> Result<Path, ResolverError> {
-        while (self.open_list.len() > 0) {
-
-            if (self.curr_node.has_same_coordinates(&self.end_node)) {
+        while self.open_list.len() > 0 {
+            if self.curr_node.has_same_coordinates(&self.end_node) {
                 // Return the path from the end node
             }
 
             // Sorts the open_list by fcost
             self.open_list.sort_by(|a, b| a.sort_by_fcost(b));
 
-            let ref_first = self.open_list.first();
-            match ref_first {
-                Some(first) => {
-                    self.curr_node = self.open_list.remove_item(first).unwrap();
-                }
-                None => {
-                    // Nothing left in the open_list...
-                }
+            if let Some(first) = self.open_list.pop() {
+                self.curr_node = first;
             }
         }
 
