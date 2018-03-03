@@ -55,6 +55,10 @@ impl Resolver {
         }
     }
 
+    pub fn start_node_coordinates(&self) -> (i32, i32) {
+        self.start_node.get_coordinates()
+    }
+
     pub fn resolve(&self) -> Result<Vec<Node>, ResolverError> {
         let result = astar(&self.start_node, |n| n.get_neighbors(&self.list_nodes), |n| n.get_distance(&self.end_node), |n| n == &self.end_node);
 

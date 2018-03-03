@@ -36,8 +36,8 @@ impl MapWindow {
     pub fn draw(&self) {
         self.map.draw(
             &self.window,
-            &self.edit_position_x,
-            &self.edit_position_y,
+            self.edit_position_x,
+            self.edit_position_y,
             &self.mode,
         );
     }
@@ -77,9 +77,9 @@ impl MapWindow {
                     }
                     Some(Input::Character(' ')) => {
                         self.map.set_case(
-                            &self.edit_position_x,
-                            &self.edit_position_y,
-                            &self.type_case,
+                            self.edit_position_x,
+                            self.edit_position_y,
+                            self.type_case,
                         );
                     }
                     Some(Input::Character('e')) => {

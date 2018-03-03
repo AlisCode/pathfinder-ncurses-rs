@@ -24,7 +24,7 @@ impl Map {
         }
     }
 
-    pub fn set_case(&mut self, x: &i32, y: &i32, type_case: &TypeCase) {
+    pub fn set_case(&mut self, x: i32, y: i32, type_case: TypeCase) {
         let case: Option<&mut Case> = self.list_items
             .iter_mut()
             .filter(|case| case.get_x() == x && case.get_y() == y)
@@ -38,7 +38,7 @@ impl Map {
         }
     }
 
-    pub fn draw(&self, window: &Window, edit_x: &i32, edit_y: &i32, mode: &MapWindowMode) {
+    pub fn draw(&self, window: &Window, edit_x: i32, edit_y: i32, mode: &MapWindowMode) {
         window.clear();
         window.draw_box('|', '-');
 
@@ -62,7 +62,6 @@ impl Map {
                 );
             }
         }
-
 
         window.refresh();
     }
@@ -133,7 +132,7 @@ impl Map {
             Ok(solver) => {
                 match solver.resolve() {
                     Ok(path) => {
-                        self.apply_path(path);
+                        self.apply_path(path, solver.start_node_coordinates());
                     }
                     Err(e) => eprintln!("Error: {:?}", e),
                 }
@@ -144,10 +143,20 @@ impl Map {
         }
     }
 
-    fn apply_path(&mut self, path: Vec<Node>) {
+    fn apply_path(&mut self, path: Vec<Node>, first: (i32, i32)) {
+        let mut old_coordinates: (i32, i32) = first;
         path.into_iter().for_each(|n| {
             let (x, y) = n.get_coordinates();
-            self.set_case(x, y, &TypeCase::Pathfinding);
+            if x < old_coordinates.0 {
+                self.set_case(x, y, TypeCase::PathfindingLeft);
+            } else if x > old_coordinates.0 {
+                self.set_case(x, y, TypeCase::PathfindingRight);
+            } else if y < old_coordinates.1 {
+                self.set_case(x, y, TypeCase::PathfindingUp);
+            } else if y > old_coordinates.1 {
+                self.set_case(x, y, TypeCase::PathfindingDown);
+            }
+            old_coordinates = (x, y);
         });
     }
 }

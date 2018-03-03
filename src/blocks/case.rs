@@ -7,7 +7,10 @@ pub enum TypeCase {
     Wall,
     StartPoint,
     EndPoint,
-    Pathfinding,
+    PathfindingLeft,
+    PathfindingRight,
+    PathfindingUp,
+    PathfindingDown,
 }
 
 impl TypeCase {
@@ -27,7 +30,10 @@ impl TypeCase {
             TypeCase::Wall => "2",
             TypeCase::EndPoint => "3",
             TypeCase::StartPoint => "4",
-            TypeCase::Pathfinding => "1",
+            TypeCase::PathfindingLeft => "1",
+            TypeCase::PathfindingRight => "1",
+            TypeCase::PathfindingUp => "1",
+            TypeCase::PathfindingDown => "1",
         }
     }
 }
@@ -42,22 +48,22 @@ pub struct Case {
 impl Case {
     pub fn new(x: i32, y: i32, flag: TypeCase) -> Self {
         Case {
-            x: x,
-            y: y,
-            flag: flag,
+            x,
+            y,
+            flag,
         }
     }
 
-    pub fn get_x(&self) -> &i32 {
-        &self.x
+    pub fn get_x(&self) -> i32 {
+        self.x
     }
 
     pub fn set_x(&mut self, new_x: i32) {
         self.x = new_x;
     }
 
-    pub fn get_y(&self) -> &i32 {
-        &self.y
+    pub fn get_y(&self) -> i32 {
+        self.y
     }
 
     pub fn set_y(&mut self, new_y: i32) {
@@ -78,7 +84,10 @@ impl Case {
             TypeCase::Wall => "X",
             TypeCase::StartPoint => "S",
             TypeCase::EndPoint => "E",
-            TypeCase::Pathfinding => "*",
+            TypeCase::PathfindingLeft => "<",
+            TypeCase::PathfindingRight => ">",
+            TypeCase::PathfindingUp => "^",
+            TypeCase::PathfindingDown => "v",
         }
     }
 

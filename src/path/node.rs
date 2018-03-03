@@ -38,7 +38,7 @@ impl Node {
         }).collect()
     }
 
-    pub fn get_coordinates(&self) -> (&i32, &i32) {
-        (&self.x, &self.y)
+    pub fn get_coordinates(&self) -> (i32, i32) {
+        (self.x, self.y)
     }
 }

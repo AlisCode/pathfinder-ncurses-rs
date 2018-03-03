@@ -20,8 +20,8 @@ fn test_map_write() {
 
     let mut file_generated_content: Vec<u8> = vec![];
     let mut file_wanted_content: Vec<u8> = vec![];
-    file_genereted.read_to_end(&mut file_generated_content);
-    file_wanted.read_to_end(&mut file_wanted_content);
+    file_genereted.read_to_end(&mut file_generated_content).unwrap();
+    file_wanted.read_to_end(&mut file_wanted_content).unwrap();
 
     assert_eq!(file_wanted_content, file_generated_content);
 }
